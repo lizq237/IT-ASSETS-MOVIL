@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="grisSysbase">#6B6B6B</color>
+    <color name="naranjaSysbase">#FE7F2D</color>
+    <color name="azulSysbase">#233D4D</color>
+    <color name="fondoSysbase">#EAECF0</color>
+
+
+
+
+
 </resources>
