@@ -22,7 +22,7 @@
         <activity
             android:name=".LoginActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize">  <!-- Aquí se cierra la apertura -->
+            android:windowSoftInputMode="adjustResize">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,6 +34,13 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <!-- pantalla empleado -->
+        <activity android:name=".EmployeeHomeActivity" android:exported="false" />
+
+        <activity
+            android:name=".AddTicketActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
