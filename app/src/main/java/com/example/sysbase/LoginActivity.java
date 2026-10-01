@@ -1,5 +1,7 @@
 package com.example.sysbase;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -32,50 +34,61 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
-            editEmail= findViewById(R.id.editEmail);
-            editContraseña= findViewById(R.id.editContraseña);
-            btnIniciarSesion= findViewById(R.id.btnIniciarSesion);
+        editEmail = findViewById(R.id.editEmail);
+        editContraseña = findViewById(R.id.editContraseña);
+        btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
 
-            btnIniciarSesion.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //Extraemos el texto de los campos de email y contra
-                    String email= editEmail.getText().toString().trim();
-                    String contraseña= editContraseña.getText().toString().trim();
-                    if (email.isEmpty() || contraseña.isEmpty()){
-                        Toast.makeText(LoginActivity.this, "Llena todos los campos", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    iniciarSesionAPI(email,contraseña);
+        //valida los campos y llame a Laravel
+        btnIniciarSesion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = editEmail.getText().toString().trim();
+                String password = editContraseña.getText().toString().trim();
+
+                if (email.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-            });
 
+                iniciarSesionAPI(email, password);
+            }
+        });
     }
+
     private void iniciarSesionAPI(String email, String password) {
-        // en lugar de web, el devide es movil
         LoginRequest request = new LoginRequest(email, password, "mobile");
 
-        // peticion asíncrona usando Retrofit
+        // Petición asíncrona usando Retrofit
         RetrofitClient.getApiService().login(request).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // si es correcto, laravel nos regresa el rol y user
                     String nombreUsuario = response.body().getUser().getName();
                     String rol = response.body().getUser().getRole();
                     String token = response.body().getAccessToken();
 
+                    // Guarda el token y el nombre del usuario en SharedPreferences
+                    SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+                    prefs.edit()
+                            .putString("TOKEN", token)
+                            .putString("USER_NAME", nombreUsuario) // <-- Nombre guardado correctamente
+                            .apply();
+
                     Toast.makeText(LoginActivity.this, "Bienvenido " + nombreUsuario, Toast.LENGTH_LONG).show();
 
+                    Intent intent = new Intent(LoginActivity.this, EmployeeHomeActivity.class);
+                    startActivity(intent);
+                    finish();
+
                 } else {
-                    // credenciales incorrectas
+
                     Toast.makeText(LoginActivity.this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                // fallos de red
+
                 Toast.makeText(LoginActivity.this, "Error de red: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
