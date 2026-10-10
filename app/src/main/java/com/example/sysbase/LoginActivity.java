@@ -67,11 +67,12 @@ public class LoginActivity extends AppCompatActivity {
                     String rol = response.body().getUser().getRole();
                     String token = response.body().getAccessToken();
 
-                    // Guarda el token y el nombre del usuario en SharedPreferences
+                    // Guarda el token, el nombre del usuario y rol en SharedPreferences
                     SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
                     prefs.edit()
                             .putString("TOKEN", token)
                             .putString("USER_NAME", nombreUsuario) // <-- Nombre guardado correctamente
+                            .putString("USER_ROLE", rol) //guardamos el rol para ver que tipo de empleado esta entrando y darle sentido a las pantallas
                             .apply();
 
                     Toast.makeText(LoginActivity.this, "Bienvenido " + nombreUsuario, Toast.LENGTH_LONG).show();

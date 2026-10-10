@@ -1,43 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F8F9FA"
     android:orientation="vertical"
-    android:padding="24dp"
-    android:background="#F8F9FA">
+    android:padding="24dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Report Issue / Ticket"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="#1A1A1A"
-        android:layout_marginBottom="24dp"/>
+        android:layout_marginBottom="8dp"
+        android:text="Reportar Falla"
+        android:textColor="@color/azulSysbase"
+        android:textSize="26sp"
+        android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/editAssetId"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Detalla el problema para que el equipo de TI pueda ayudarte rápidamente."
+        android:textColor="@color/grisSysbase"
+        android:textSize="14sp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="ID o Código del equipo afectado"
-        android:inputType="text"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="20dp"
+        android:hint="ID o Código del equipo"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxStrokeColor="@color/azulSysbase"
+        app:hintTextColor="@color/azulSysbase"
+        app:startIconDrawable="@android:drawable/ic_menu_info_details">
 
-    <EditText
-        android:id="@+id/editDescription"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editAssetId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter"
+            android:inputType="text"
+            android:padding="16dp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:gravity="top"
-        android:hint="Describe detalladamente el problema..."
-        android:inputType="textMultiLine"
-        android:layout_marginBottom="24dp"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:hint="Descripción del problema"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxStrokeColor="@color/azulSysbase"
+        app:hintTextColor="@color/azulSysbase">
 
-    <Button
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter"
+            android:gravity="top|start"
+            android:inputType="textMultiLine"
+            android:lines="5"
+            android:minLines="5"
+            android:padding="16dp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSubmitTicket"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
+        android:backgroundTint="@color/naranjaSysbase"
         android:text="Enviar Reporte"
-        android:backgroundTint="#FF6B00"
-        android:textColor="@android:color/white"/>
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp" />
 
 </LinearLayout>

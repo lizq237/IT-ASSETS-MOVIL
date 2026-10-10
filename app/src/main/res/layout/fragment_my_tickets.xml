@@ -23,12 +23,13 @@
         android:textSize="22sp"
         android:textStyle="bold" />
 
+    <!-- Este es un ejemplo base de como se podria ver -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="No hay tickets por el momento"
+        android:text="No has reportado fallas recientemente."
         android:textColor="#8F90A6"
         android:textSize="14sp" />
 

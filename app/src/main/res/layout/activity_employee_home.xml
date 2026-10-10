@@ -11,6 +11,8 @@
         android:id="@+id/topBar"
         android:layout_width="0dp"
         android:layout_height="75dp"
+        android:background="@android:color/white"
+        android:elevation="8dp"
         android:paddingHorizontal="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,8 +28,8 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/gemini_svg" />
 
@@ -36,165 +38,77 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:text="sysbase"
-                android:textColor="#1A1A1A"
-                android:textSize="24sp"
+                android:textColor="@color/azulSysbase"
+                android:textSize="22sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- campana de notificacion-->
         <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/btnNotifications"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="4dp"
                 android:src="@android:drawable/ic_popup_reminder"
-                app:tint="#1A1A1A" />
+                app:tint="#4A5568" />
 
-            <!-- Indicador numérico (Badge) -->
             <TextView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_gravity="top|end"
-                android:background="#E53935"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_input"
+                android:backgroundTint="#E53935"
                 android:gravity="center"
                 android:text="2"
                 android:textColor="@android:color/white"
                 android:textSize="10sp"
                 android:textStyle="bold" />
         </FrameLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- encabezado-->
-    <LinearLayout
-        android:id="@+id/headerLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="12dp"
-        android:orientation="horizontal"
-        android:paddingHorizontal="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="My Equipment"
-            android:textColor="#333333"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Asignados"
-            android:textColor="#FF6B00"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <!-- equipos vista (RECYCLERVIEW) -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewAssets"
+    <FrameLayout
+        android:id="@+id/frameLayoutContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingHorizontal="20dp"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headerLayout"
-        tools:listitem="@layout/item_asset" />
-
-    <!-- contenedor de la pantalla profile (Oculto por defecto) -->
-    <LinearLayout
-        android:id="@+id/layoutProfileContainer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#F8F9FA"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar">
-
-        <!-- Sección central con avatar y saludo -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@android:drawable/dialog_holo_light_frame"
-                android:padding="16dp"
-                android:src="@android:drawable/ic_menu_myplaces"
-                app:tint="#1A1A1A" />
-
-            <TextView
-                android:id="@+id/tvUserName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="¡Hola, Usuario!"
-                android:textColor="#1A1A1A"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- botón log Out -->
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginBottom="20dp"
-            android:backgroundTint="#FFE5E5"
-            android:text="Log Out"
-            android:textAllCaps="false"
-            android:textColor="#FF3B30"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:cornerRadius="12dp" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@id/topBar" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddEquipment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="20dp"
         android:contentDescription="Agregar equipo"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="#FF6B00"
+        app:backgroundTint="@color/naranjaSysbase"
+        app:elevation="6dp"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@android:color/white" />
 
-    <!-- barra de navegacion inferior -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
+        style="@style/Widget.MaterialComponents.BottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="#1E293B"
-        app:itemIconTint="@android:color/white"
-        app:itemTextColor="@android:color/white"
+        android:elevation="16dp"
+        app:itemIconSize="24dp"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
