@@ -52,6 +52,16 @@
                 android:text="Asignado"
                 android:textColor="#999999"
                 android:textSize="11sp" />
+
+            <!-- NUEVO: TextView independiente para el Estado -->
+            <TextView
+                android:id="@+id/txtEquipmentStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Estado"
+                android:textSize="11sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <Button

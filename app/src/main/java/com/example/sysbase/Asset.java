@@ -13,8 +13,17 @@ public class Asset {
     public String getId() { return id; }
     public String getCode() { return code; }
     public String getType() { return type; }
-    public String getModel() { return model; }
-    public String getSerial_number() { return serial_number; }
+
+    // Evita que aparezca "null" en pantalla si no viene modelo
+    public String getModel() {
+        return model != null ? model : "No especificado";
+    }
+
+    // Evita que aparezca "null" en pantalla si no viene número de serie[cite: 4]
+    public String getSerial_number() {
+        return serial_number != null ? serial_number : "Sin serie";
+    }
+
     public String getStatus() { return status; }
     public String getCreated_at() { return created_at; }
 }

@@ -1,5 +1,6 @@
 package com.example.sysbase;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,9 +36,22 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.AssetViewHol
     @Override
     public void onBindViewHolder(@NonNull AssetViewHolder holder, int position) {
         Asset asset = assetList.get(position);
-        holder.txtModel.setText(asset.getModel());
-        holder.txtType.setText(asset.getType() + " · " + asset.getSerial_number());
-        holder.txtDate.setText("Asignado: " + asset.getCreated_at());
+
+        holder.txtModel.setText(asset.getCode() + " — " + asset.getModel());
+        holder.txtType.setText("Categoría: " + asset.getType() + " · Serie: " + asset.getSerial_number());
+        holder.txtDate.setText("Registrado: " + asset.getCreated_at());
+
+        // Configuración del estado y colores dinámicos
+        String status = asset.getStatus() != null ? asset.getStatus().toLowerCase() : "";
+        holder.txtStatus.setText("Estado: " + asset.getStatus());
+
+        if (status.equals("activo")) {
+            holder.txtStatus.setTextColor(Color.parseColor("#2E7D32")); // Verde oscuro elegante
+        } else if (status.equals("mantenimiento")) {
+            holder.txtStatus.setTextColor(Color.parseColor("#ED6C02")); // Naranja
+        } else {
+            holder.txtStatus.setTextColor(Color.parseColor("#D32F2F")); // Rojo para baja u otros
+        }
 
         holder.btnReport.setOnClickListener(v -> {
             if (reportClickListener != null) {
@@ -52,7 +66,7 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.AssetViewHol
     }
 
     public static class AssetViewHolder extends RecyclerView.ViewHolder {
-        TextView txtModel, txtType, txtDate;
+        TextView txtModel, txtType, txtDate, txtStatus;
         Button btnReport;
 
         public AssetViewHolder(@NonNull View itemView) {
@@ -60,6 +74,7 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.AssetViewHol
             txtModel = itemView.findViewById(R.id.txtEquipmentModel);
             txtType = itemView.findViewById(R.id.txtEquipmentType);
             txtDate = itemView.findViewById(R.id.txtAssignedDate);
+            txtStatus = itemView.findViewById(R.id.txtEquipmentStatus); // Mapeo del nuevo TextView
             btnReport = itemView.findViewById(R.id.btnReportIssueCard);
         }
     }
