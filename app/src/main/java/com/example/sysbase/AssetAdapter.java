@@ -26,6 +26,21 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.AssetViewHol
         this.reportClickListener = listener;
     }
 
+    private String formatearFecha(String fecha) {
+        if (fecha == null || fecha.length() < 10) {
+            return "Sin fecha";
+        }
+
+        String fechaCorta = fecha.substring(0, 10);
+        String[] partes = fechaCorta.split("-");
+
+        if (partes.length != 3) {
+            return "Sin fecha";
+        }
+
+        return partes[2] + "/" + partes[1] + "/" + partes[0];
+    }
+
     @NonNull
     @Override
     public AssetViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,8 +54,7 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.AssetViewHol
 
         holder.txtModel.setText(asset.getCode() + " — " + asset.getModel());
         holder.txtType.setText("Categoría: " + asset.getType() + " · Serie: " + asset.getSerial_number());
-        holder.txtDate.setText("Registrado: " + asset.getCreated_at());
-
+        holder.txtDate.setText("Registrado: " + formatearFecha(asset.getCreated_at()));
         // Configuración del estado y colores dinámicos
         String status = asset.getStatus() != null ? asset.getStatus().toLowerCase() : "";
         holder.txtStatus.setText("Estado: " + asset.getStatus());

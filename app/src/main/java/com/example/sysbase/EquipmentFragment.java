@@ -60,7 +60,7 @@ public class EquipmentFragment extends Fragment {
         String token = prefs.getString("TOKEN", "");
 
         if (token.isEmpty()) {
-            // Si no hay token, opcionalmente puedes redirigir al Login
+            volverAlLogin();
             return;
         }
 
@@ -103,12 +103,14 @@ public class EquipmentFragment extends Fragment {
                     // 4. Manejo de códigos de error HTTP específicos
                     int code = response.code();
                     if (code == 401) {
-                        // Token ausente o inválido: limpiar sesión y pedir nuevo login[cite: 2]
-                        prefs.edit().clear().apply();
-                        Toast.makeText(getContext(), "Sesión expirada. Inicia sesión nuevamente.", Toast.LENGTH_LONG).show();
-                        // Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        // startActivity(intent);
-                        // requireActivity().finish();
+                        Toast.makeText(
+                                requireContext(),
+                                "Sesión expirada. Inicia sesión nuevamente.",
+                                Toast.LENGTH_LONG
+                        ).show();
+
+                        volverAlLogin();
+                        return;
                     } else if (code == 403) {
                         if (txtError != null) {
                             txtError.setText("No tienes permisos o organización asignada.");
@@ -137,5 +139,17 @@ public class EquipmentFragment extends Fragment {
                 if (btnRetry != null) btnRetry.setVisibility(View.VISIBLE);
             }
         });
+    }
+    private void volverAlLogin() {
+        requireActivity()
+                .getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+                .edit()
+                .clear()
+                .apply();
+
+        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }
