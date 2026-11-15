@@ -55,6 +55,7 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.AssetViewHol
         holder.txtModel.setText(asset.getCode() + " — " + asset.getModel());
         holder.txtType.setText("Categoría: " + asset.getType() + " · Serie: " + asset.getSerial_number());
         holder.txtDate.setText("Registrado: " + formatearFecha(asset.getCreated_at()));
+
         // Configuración del estado y colores dinámicos
         String status = asset.getStatus() != null ? asset.getStatus().toLowerCase() : "";
         holder.txtStatus.setText("Estado: " + asset.getStatus());

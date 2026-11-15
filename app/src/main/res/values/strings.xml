@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">SysBase</string>
+
+    <string-array name="prioridades_ticket">
+        <item>baja</item>
+        <item>media</item>
+        <item>alta</item>
+    </string-array>
+
 </resources>

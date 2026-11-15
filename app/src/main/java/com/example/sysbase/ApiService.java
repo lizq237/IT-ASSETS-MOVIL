@@ -24,10 +24,12 @@ public interface ApiService {
     // Levantar un ticket/reporte en formato Multipart
     @Multipart
     @POST("employee/tickets")
-    Call<Void> createTicket(
+    Call<TicketResponse> createTicket(
             @Header("Authorization") String token,
             @Part("asset_id") RequestBody assetId,
+            @Part("title") RequestBody title,
             @Part("description") RequestBody description,
+            @Part("priority") RequestBody priority,
             @Part MultipartBody.Part image
     );
 }

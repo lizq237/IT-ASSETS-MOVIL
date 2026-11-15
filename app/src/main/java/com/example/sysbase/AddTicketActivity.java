@@ -11,63 +11,178 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.widget.ArrayAdapter;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddTicketActivity extends AppCompatActivity {
 
-    private EditText editAssetId, editDescription;
+    private MaterialAutoCompleteTextView editAssetId;
+    private EditText editTitle, editDescription;
+    private MaterialAutoCompleteTextView editPriority;
+    private String selectedAssetId;
     private Button btnSubmitTicket;
+    private String assetIdReceived;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_ticket);
 
-        String assetIdReceived = getIntent().getStringExtra("ASSET_ID");
+        assetIdReceived = getIntent().getStringExtra("ASSET_ID");
 
         editAssetId = findViewById(R.id.editAssetId);
         editDescription = findViewById(R.id.editDescription);
+        editTitle = findViewById(R.id.editTitle);
+        editPriority = findViewById(R.id.editPriority);
         btnSubmitTicket = findViewById(R.id.btnSubmitTicket);
 
-        if (assetIdReceived != null && editAssetId != null) {
-            editAssetId.setText(assetIdReceived);
-        }
 
         btnSubmitTicket.setOnClickListener(v -> enviarTicket());
+        cargarEquiposAsignados();
     }
 
-    private void enviarTicket() {
-        String assetIdStr = editAssetId.getText().toString().trim();
-        String descriptionStr = editDescription.getText().toString().trim();
+    private void cargarEquiposAsignados() {
+        String token = getSharedPreferences("UserSession", MODE_PRIVATE)
+                .getString("TOKEN", "");
 
-        if (assetIdStr.isEmpty() || descriptionStr.isEmpty()) {
-            Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Inicia sesión para consultar tus equipos.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Preparar parámetros Multipart requeridos por la API
-        RequestBody assetIdBody = RequestBody.create(MediaType.parse("text/plain"), assetIdStr);
-        RequestBody descBody = RequestBody.create(MediaType.parse("text/plain"), descriptionStr);
+        RetrofitClient.getApiService().getEmployeeAssets("Bearer " + token)
+                .enqueue(new Callback<List<Asset>>() {
+                    @Override
+                    public void onResponse(Call<List<Asset>> call, Response<List<Asset>> response) {
+                        if (isFinishing() || isDestroyed()) return;
 
-        // Token Bearer de la sesión actual
+                        List<Asset> equipos = response.body();
+                        if (!response.isSuccessful() || equipos == null) {
+                            Toast.makeText(AddTicketActivity.this,
+                                    "No se pudieron cargar tus equipos (" + response.code() + ").",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (equipos.isEmpty()) {
+                            editAssetId.setHint("No tienes equipos asignados");
+                            editAssetId.setEnabled(false);
+                            return;
+                        }
+
+                        List<String> etiquetas = new ArrayList<>();
+                        for (Asset equipo : equipos) {
+                            etiquetas.add(equipo.getCode() + " — " + equipo.getModel());
+                        }
+
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                                AddTicketActivity.this,
+                                android.R.layout.simple_dropdown_item_1line,
+                                etiquetas
+                        );
+                        editAssetId.setAdapter(adapter);
+
+                        editAssetId.setOnItemClickListener((parent, view, posicion, id) -> {
+                            selectedAssetId = equipos.get(posicion).getId();
+                        });
+
+                        // si se abre de una tarjeta, selecciona ese equipo directamente
+                        for (int i = 0; i < equipos.size(); i++) {
+                            if (assetIdReceived != null && assetIdReceived.equals(equipos.get(i).getId())) {
+                                editAssetId.setText(etiquetas.get(i), false);
+                                selectedAssetId = equipos.get(i).getId();
+                                break;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Asset>> call, Throwable t) {
+                        if (isFinishing() || isDestroyed()) return;
+                        Toast.makeText(AddTicketActivity.this,
+                                "No se pudo conectar con la API.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void enviarTicket() {
+        String titulo = editTitle.getText().toString().trim();
+        String descripcion = editDescription.getText().toString().trim();
+        String prioridad = editPriority.getText().toString().trim();
+
+        if (selectedAssetId == null || selectedAssetId.isEmpty()) {
+            Toast.makeText(this, "Selecciona un equipo asignado.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (titulo.isEmpty()) {
+            editTitle.setError("Escribe el título del reporte.");
+            editTitle.requestFocus();
+            return;
+        }
+        if (descripcion.isEmpty()) {
+            editDescription.setError("Describe el problema.");
+            editDescription.requestFocus();
+            return;
+        }
+        if (prioridad.isEmpty()) {
+            Toast.makeText(this, "Selecciona una prioridad.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String token = getSharedPreferences("UserSession", MODE_PRIVATE).getString("TOKEN", "");
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Inicia sesión para enviar el reporte.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        ApiService apiService = RetrofitClient.getApiService();
-        Call<Void> call = apiService.createTicket("Bearer " + token, assetIdBody, descBody, null);
+        MediaType texto = MediaType.parse("text/plain");
+        Call<TicketResponse> call = RetrofitClient.getApiService().createTicket(
+                "Bearer " + token,
+                RequestBody.create(texto, selectedAssetId),
+                RequestBody.create(texto, titulo),
+                RequestBody.create(texto, descripcion),
+                RequestBody.create(texto, prioridad),
+                null
+        );
 
-        call.enqueue(new Callback<Void>() {
+        btnSubmitTicket.setEnabled(false);
+        call.enqueue(new Callback<TicketResponse>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(AddTicketActivity.this, "¡Ticket enviado con éxito!", Toast.LENGTH_SHORT).show();
+            public void onResponse(Call<TicketResponse> call, Response<TicketResponse> response) {
+                if (isFinishing() || isDestroyed()) return;
+
+                TicketResponse body = response.body();
+                String id = body != null ? body.getTicketId() : null;
+
+                if (response.code() == 201 && id != null && !id.isEmpty()) {
+                    Toast.makeText(AddTicketActivity.this,
+                            "Reporte registrado. Folio: " + id, Toast.LENGTH_LONG).show();
                     finish();
-                } else {
-                    Toast.makeText(AddTicketActivity.this, "Error al enviar el ticket" , Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                btnSubmitTicket.setEnabled(true);
+                String mensaje = "No se pudo confirmar el reporte (" + response.code() + ").";
+                if (response.code() == 401) {
+                    mensaje = "Tu sesión expiró. Inicia sesión nuevamente.";
+                } else if (response.code() == 422) {
+                    mensaje = "Revisa los campos y que el equipo siga asignado a tu cuenta.";
+                }
+                Toast.makeText(AddTicketActivity.this, mensaje, Toast.LENGTH_LONG).show();
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(AddTicketActivity.this, "Error de red: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            public void onFailure(Call<TicketResponse> call, Throwable t) {
+                if (isFinishing() || isDestroyed()) return;
+
+                btnSubmitTicket.setEnabled(true);
+                Toast.makeText(AddTicketActivity.this,
+                        "No se pudo confirmar el envío. Revisa tu conexión.",
+                        Toast.LENGTH_LONG).show();
             }
         });
     }
