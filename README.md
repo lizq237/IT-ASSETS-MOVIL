@@ -1,93 +1,146 @@
-# Móvil
+# IT Assets Management — Android
 
+**Aplicación móvil para consultar activos tecnológicos asignados y registrar incidencias de soporte técnico.**
 
+> **Estado:** proyecto académico en desarrollo · **Facultad de Informática, UAS** · **Líder de proyecto:** Lizeth Quiroz Urias
 
-## Getting started
+La app forma parte de IT Assets Management, una plataforma multi-tenant con panel administrativo web y API REST. Su enfoque es que cada usuario autenticado pueda consultar sus propios equipos y reportar problemas desde Android.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+**Repositorios relacionados:** [Web y guía general](https://github.com/lizq237/IT-ASSETS-WEB) · [API Laravel](https://github.com/lizq237/IT-ASSETS-API) · **Android (este repositorio)**
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Funcionalidades presentes en el código
 
-## Add your files
+- **Inicio de sesión** con correo y contraseña mediante la API Laravel y token Bearer.
+- **Consulta de activos asignados** al usuario autenticado, con estados de carga, error y lista vacía.
+- **Creación de tickets** seleccionando un equipo, descripción y prioridad (`baja`, `media`, `alta`).
+- **Evidencia opcional:** selección de imagen desde el teléfono y envío multipart a la API (límite de 5 MiB).
+- **Perfil básico y cierre de sesión** con datos de sesión almacenados en `SharedPreferences`.
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+**En desarrollo:** las vistas de historial/listado de tickets (`MyTicketsFragment` y `AllTicketsFragment`) aún son estructuras visuales básicas y **no realizan consultas de historial a la API**. No se anuncian como funcionalidades terminadas.
 
+## Stack
+
+| Capa | Tecnologías |
+| --- | --- |
+| Aplicación nativa | Java, XML, Android SDK |
+| Entorno de desarrollo | Android Studio y Gradle Wrapper |
+| Consumo de API | Retrofit 2, Gson |
+| UI | AndroidX, Material Components, RecyclerView |
+| Backend | Laravel 12 + Sanctum (repositorio independiente) |
+| Persistencia remota | PostgreSQL para activos/usuarios y MongoDB para tickets |
+
+El proyecto declara **`minSdk 24`**, compilación con **SDK 37**, **Java 11** y usa el Gradle Wrapper incluido en el repositorio. Android Studio necesitará tener instaladas las herramientas compatibles con la configuración actual.
+
+## Antes de abrir la app
+
+La aplicación **no es independiente**: necesita que la API Laravel esté ejecutándose y que existan datos de prueba. La infraestructura local se inicia desde el repositorio Web.
+
+### 1. Preparar el backend
+
+Sigue la [guía de instalación de IT-ASSETS-WEB](https://github.com/lizq237/IT-ASSETS-WEB) o la [guía técnica de la API](https://github.com/lizq237/IT-ASSETS-API).
+
+En resumen:
+
+```bash
+git clone -b developer https://github.com/lizq237/IT-ASSETS-WEB.git
+git clone -b developer https://github.com/lizq237/IT-ASSETS-API.git
+
+cd IT-ASSETS-WEB
+docker compose up -d
 ```
-cd existing_repo
-git remote add origin https://code.ficlabs.com.mx/fic/informatica/taller-integrador/2026-2027-1/grupo-1/equipo-1/movil.git
-git branch -M main
-git push -uf origin main
+
+En otra terminal, dentro de `IT-ASSETS-API`, configura `.env` para PostgreSQL y MongoDB y ejecuta:
+
+```bash
+composer install
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve --host=127.0.0.1 --port=8000
 ```
 
-## Integrate with your tools
+**Importante:** los seeders iniciales crean organizaciones y administradores, pero **no crean una cuenta móvil con equipos asignados**. Para demostrar la app:
 
-* [Set up project integrations](https://code.ficlabs.com.mx/fic/informatica/taller-integrador/2026-2027-1/grupo-1/equipo-1/movil/-/settings/integrations)
+1. Entra al panel web como un administrador TI de una organización local.
+2. Crea un usuario de prueba con rol `responsable` o `tecnico`.
+3. Registra un equipo con estado `activo`, crea los catálogos requeridos y asígnale ese equipo.
+4. Utiliza el correo y la contraseña de **ese usuario** para iniciar sesión en Android.
 
-## Collaborate with your team
+No intentes levantar tickets con el usuario `super_admin`: carece de organización asignada.
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### 2. Clonar y ejecutar el proyecto Android
 
-## Test and Deploy
+```bash
+git clone -b main https://github.com/lizq237/IT-ASSETS-MOVIL.git
+```
 
-Use the built-in continuous integration in GitLab.
+1. Abre la carpeta `IT-ASSETS-MOVIL` desde **Android Studio → Open**.
+2. Permite la sincronización de Gradle y descarga las dependencias solicitadas.
+3. Inicia un emulador Android compatible (API 24 o superior).
+4. Confirma que Laravel sigue ejecutándose en el puerto `8000`.
+5. Pulsa **Run** y abre la aplicación.
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+No se necesita configurar Firebase: el cliente consume la API REST de Laravel.
 
-***
+## Configurar la conexión API
 
-# Editing this README
+En [`RetrofitClient.java`](https://github.com/lizq237/IT-ASSETS-MOVIL/blob/main/app/src/main/java/com/example/sysbase/RetrofitClient.java), el código actual contiene:
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+```java
+private static final String BASE_URL = "http://10.0.2.2:8000/api/";
+```
 
-## Suggestions for a good README
+- **Emulador Android:** deja `10.0.2.2`, que apunta al equipo anfitrión. `localhost` dentro del emulador apunta al propio emulador, no a tu PC.
+- **Teléfono físico:** sustituye esa dirección por la IP privada de tu computadora, por ejemplo `http://192.168.1.50:8000/api/`, y levanta Laravel con `php artisan serve --host=0.0.0.0 --port=8000`. El móvil y la PC deben estar en la misma red y el firewall debe permitir el acceso.
+- **Producción:** se necesita un backend publicado con **HTTPS** y una configuración más segura antes de distribuir la aplicación.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+El `AndroidManifest.xml` actual permite tráfico HTTP sin cifrar (`usesCleartextTraffic="true"`) para **pruebas locales**. No se debe interpretar como configuración segura de producción.
 
-## Name
-Choose a self-explaining name for your project.
+## Recorrido de prueba para reclutadores
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+1. **Login:** entra con el usuario de prueba que creaste en la API (no con el superadministrador).
+2. **Mis equipos:** revisa la lista de activos asignados. Si no existen, verás el mensaje «No tienes equipos asignados».
+3. **Reportar incidencia:** elige un equipo, escribe título y descripción y selecciona una prioridad.
+4. **Adjuntar imagen (opcional):** selecciona una fotografía desde el dispositivo, revisa la vista previa y envía.
+5. **Confirmar creación:** al recibir la respuesta `201` de Laravel, la aplicación muestra un folio de ticket. El registro queda guardado en MongoDB.
+6. **Cerrar sesión:** utiliza el apartado de perfil.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+**No incluyas datos reales ni imágenes sensibles durante la evaluación.** Se recomienda usar únicamente inventario y cuentas ficticias.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## Endpoints consumidos
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+La interfaz `ApiService.java` actualmente define estas peticiones:
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+| Método | Endpoint | Uso |
+| --- | --- | --- |
+| POST | `/api/login` | Autenticación y token |
+| GET | `/api/employee/assets` | Equipos asignados al usuario |
+| POST | `/api/employee/tickets` | Crear ticket, con imagen opcional |
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+El envío de tickets es `multipart/form-data`. La API valida que el equipo esté asignado al usuario y pertenezca a su organización. Si los datos son inválidos o el equipo no corresponde, puede devolver `422`.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+## Problemas frecuentes
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+- **`Connection refused` en el emulador:** comprueba que Laravel esté encendido, usa `10.0.2.2:8000` y verifica la ruta `/api/login`.
+- **`Connection timed out` en un teléfono físico:** revisa IP local, Wi-Fi, firewall y que Laravel use `--host=0.0.0.0` en una red de confianza.
+- **Credenciales incorrectas:** comprueba que el usuario exista en PostgreSQL y utiliza las credenciales creadas para la demo.
+- **No aparecen equipos:** el empleado no tiene activos asignados; regístralos y asígnalos desde la web.
+- **Error `401`:** el token no es válido o la sesión expiró. Inicia sesión de nuevo.
+- **Error `422` al crear ticket:** revisa los campos y que el equipo siga asignado a la cuenta.
+- **Error de compilación o SDK:** sincroniza Gradle, revisa las versiones de SDK/AGP definidas en el repositorio y consulta la ventana Build de Android Studio.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## Organización del código
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- `RetrofitClient.java`: URL base y creación del cliente HTTP.
+- `ApiService.java`: contrato de endpoints consumidos.
+- `LoginActivity.java`: autenticación y sesión local.
+- `EquipmentFragment.java`: consulta y listado de activos.
+- `AddTicketActivity.java`: formulario de ticket con evidencia.
+- `ProfileFragment.java`: datos básicos de perfil y cierre de sesión.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## Estado y próximos pasos
 
-## License
-For open source projects, say how it is licensed.
+La app continúa en desarrollo. Entre los trabajos pendientes están el historial real de tickets, una configuración de red para producción con HTTPS, pruebas automatizadas y capturas documentadas de las pantallas.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+---
+
+**Equipo:** proyecto académico realizado por seis integrantes, coordinado por Lizeth Quiroz Urias.
